@@ -11,6 +11,9 @@ var express = require('express')
 // Uncomment to update useragent lookup table
 //useragent(true);
 
+// Set the proxy uri
+//gm.setProxy('http://your.proxy');
+
 ///////////////////////////////////////////////////////////////////// ROBODECK APP
 var app = module.exports = express.createServer();
 
@@ -85,12 +88,14 @@ app.get('/x', function(req, res) {
 app.get('/next', function(req, res) {
   console.log('NEXT- ' + 'server time: ' + getTime() + ', client time: ' + req);	
   send(JSON.stringify({ "cmd": 'next' }));
+  res.send("ok");
 });
 
 ///////////////////////////////////////////////////////////////////// ROUTES - Back()
 app.get('/back', function(req, res) {
   console.log('PREV ' + getTime());
   send(JSON.stringify({ "cmd": 'prev' }));
+  res.send("ok");
 });
 
 ///////////////////////////////////////////////////////////////////// ROUTES - Other()
@@ -113,7 +118,7 @@ sio.sockets.on('connection', function(client) {
   // For each connection made add the client to the array of clients.
   console.log('server connection EVENT FIRED');
   //console.log('CLIENT connected'); 
-  console.log('CLIENT ID: ' + client.id + ', TRANSPORT MECHANISM: ' + sio.transports[client.id].name);
+//  console.log('CLIENT ID: ' + client.id + ', TRANSPORT MECHANISM: ' + sio.transports[client.id].name);
 
 ///////////////////////////////////////////////////////////////////// BUILD CLIENTS LIST
   clients.push(client);
@@ -132,8 +137,15 @@ sio.sockets.on('connection', function(client) {
   client.on('disconnect', function () {
     console.log('disconnect EVENT FIRED');
 	console.log(clients.length)
-	var index = clients.indexOf(client.id);
-	console.log(index)
+//	var index = clients.indexOf(client.id);
+    var index = -1;
+    for(var i=0; i < clients.length; i++) {
+      if (clients[i].id == client.id) {
+        index = i;
+        break;
+      }
+    }
+   	console.log(index)
 	clients.splice(index, 1);
 	console.log(clients.length)
   });
@@ -144,10 +156,11 @@ sio.sockets.on('connection', function(client) {
 	var loc = data.lat + "," + data.long
 	console.log(loc)
 	gm.reverseGeocode(loc, function(err, data){
-		
-	  var city = data.results[0].address_components[2].long_name;	
-	  var state = data.results[0].address_components[4].long_name;
-	  var loc = city + ", " + state; 
+      if (data) {
+        var city = data.results[0].address_components[2].long_name; 
+        var state = data.results[0].address_components[4].long_name;
+        loc = city + ", " + state; 
+      }
 	  send(JSON.stringify({ "loc": loc }));
 	});
   });
