@@ -85,14 +85,14 @@ app.get('/x', function(req, res) {
 
 ///////////////////////////////////////////////////////////////////// ACCEPT XHR CALLS FROM REMOTE MOBILE APP 
 ///////////////////////////////////////////////////////////////////// ROUTES - Next()
-app.get('/next', function(req, res) {
-  console.log('NEXT- ' + 'server time: ' + getTime() + ', client time: ' + req);	
+app.post('/next', function(req, res) {
+  console.log('NEXT- ' + 'server time: ' + getTime() + ', client time: ' + req.param('d'));	
   send(JSON.stringify({ "cmd": 'next' }));
   res.send("ok");
 });
 
 ///////////////////////////////////////////////////////////////////// ROUTES - Back()
-app.get('/back', function(req, res) {
+app.post('/back', function(req, res) {
   console.log('PREV ' + getTime());
   send(JSON.stringify({ "cmd": 'prev' }));
   res.send("ok");

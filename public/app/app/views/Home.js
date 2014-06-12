@@ -7,8 +7,10 @@ function getTime(){
 
 function xhr(url) {
   var request = new window.XMLHttpRequest();
-  request.open('GET', url, true);
-  request.send(getTime());
+  request.open('POST', url, true);
+  request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  var data = encodeURIComponent( "d="+getTime() ).replace( /%20/g, '+' )
+  request.send(data);
 }
 
 app.views.Home = Ext.extend(Ext.Panel, {
