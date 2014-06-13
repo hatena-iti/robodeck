@@ -12,7 +12,11 @@ var express = require('express')
 //useragent(true);
 
 // Set the proxy uri
-//gm.setProxy('http://your.proxy');
+var proxy = process.env.http_proxy || process.env.HTTP_PROXY;
+console.log('[proxy]' + proxy);
+if (proxy) {
+  gm.setProxy(proxy);
+}
 
 ///////////////////////////////////////////////////////////////////// ROBODECK APP
 var app = module.exports = express.createServer();
